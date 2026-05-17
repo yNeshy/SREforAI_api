@@ -28,6 +28,18 @@ class Settings(BaseSettings):
         ...,
         description="Fernet encryption key for API key storage"
     )
+    jwt_secret_key: str = Field(
+        ...,
+        description="Secret key for JWT token signing"
+    )
+    jwt_algorithm: str = Field(
+        default="HS256",
+        description="JWT algorithm for token encoding/decoding"
+    )
+    jwt_access_token_expire_minutes: int = Field(
+        default=60 * 24 * 7,  # 7 days
+        description="JWT access token expiration time in minutes"
+    )
     
     # API Rate Limiting (SRE-grade defaults)
     openai_rate_limit_requests_per_minute: int = 3000

@@ -18,6 +18,8 @@ class Organization(Base):
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=False, unique=True, index=True)
+    password_hash = Column(String(255), nullable=False)
     
     # Encrypted API keys (never store raw keys!)
     encrypted_openai_admin_key = Column(String, nullable=True)
