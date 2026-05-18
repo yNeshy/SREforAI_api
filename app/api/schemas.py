@@ -141,3 +141,24 @@ class OrganizationContext(BaseModel):
     class Config:
         """Pydantic configuration."""
         arbitrary_types_allowed = True
+
+
+# ============================================================================
+# Rate Limit and Utilization Schemas
+# ============================================================================
+
+class RateLimitRequest(BaseModel):
+    """Request schema for fetching rate limits and utilization."""
+    provider: Literal['openai', 'claude', 'gemini', 'deepseek'] = Field(
+        ...,
+        description="API provider to query"
+    )
+    api_key: str = Field(..., min_length=1, description="Admin API key for the provider")
+
+
+class RateLimitResponse(BaseModel):
+    """Response schema for rate limits and utilization."""
+    utilization: dict = Field(..., description="Current utilization metrics")
+    limits: dict = Field(..., description="Rate limit information")
+    provider: str = Field(..., description="Provider name")
+    timestamp: str = Field(..., description="ISO 8601 timestamp of the fetch")

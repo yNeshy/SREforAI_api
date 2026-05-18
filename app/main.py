@@ -5,8 +5,10 @@ This is the entry point for the AI Cost Monitoring Platform API.
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from apscheduler.schedulers.background import BackgroundScheduler
 from app.core.config import settings
-from app.api.v1 import auth, metrics
+from app.api.v1 import auth, rate_limits
+from app.cron.rate_limits_fetcher import fetch_all_rate_limits
 
 # Create FastAPI application
 app = FastAPI(
@@ -43,10 +45,34 @@ app.include_router(
 )
 
 app.include_router(
-    metrics.router,
-    prefix="/api/v1/metrics",
-    tags=["Metrics"]
+    rate_limits.router,
+    prefix="/api/v1",
+    tags=["Rate Limits"]
 )
+
+
+# Initialize background scheduler for cron jobs
+scheduler = BackgroundScheduler()
+
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize scheduled tasks on application startup."""
+    # Schedule rate limits fetch job to run every 15 minutes
+    scheduler.add_job(
+        fetch_all_rate_limits,
+        'interval',
+        minutes=15,
+        id='rate_limits_fetch',
+        replace_existing=True
+    )
+    scheduler.start()
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Shutdown scheduler on application shutdown."""
+    scheduler.shutdown()
 
 
 @app.get("/")

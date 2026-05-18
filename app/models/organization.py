@@ -22,8 +22,10 @@ class Organization(Base):
     password_hash = Column(String(255), nullable=False)
     
     # Encrypted API keys (never store raw keys!)
-    encrypted_openai_admin_key = Column(String, nullable=True)
-    encrypted_anthropic_admin_key = Column(String, nullable=True)
+    openai_api_key_encrypted = Column(String, nullable=True)
+    anthropic_api_key_encrypted = Column(String, nullable=True)
+    gemini_api_key_encrypted = Column(String, nullable=True)
+    deepseek_api_key_encrypted = Column(String, nullable=True)
     
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
